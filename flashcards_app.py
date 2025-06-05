@@ -10,13 +10,12 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# App title
 st.title("📚 Apprendre le Mandarin : Flashcards & Jeu d'association")
 
 # Mode selection
 mode = st.radio("Choisissez un mode :", ["Flashcards", "Jeu d'association"])
 
-# Flashcard Mode
+# ---------------- FLASHCARD MODE ----------------
 if mode == "Flashcards":
     if 'index' not in st.session_state:
         st.session_state.index = 0
@@ -51,49 +50,4 @@ if mode == "Flashcards":
         <div class="flashcard">
             <p>{current_word['Graphie']}</p>
             <p class="pinyin">{current_word['Pinyin']}</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-    if st.button("Afficher la traduction"):
-        st.session_state.show_translation = True
-
-    if st.session_state.show_translation:
-        st.markdown(f"""
-            <div class="flashcard">
-                <p>{current_word['Signification']}</p>
-            </div>
-        """, unsafe_allow_html=True)
-
-    if st.button("Mot suivant"):
-        st.session_state.index += 1
-        st.session_state.show_translation = False
-        if st.session_state.index >= len(df):
-            st.session_state.index = 0
-
-# Matching Game Mode
-else:
-    st.subheader("🎯 Associez les mots chinois à leur signification")
-
-    if 'shuffled_graphie' not in st.session_state or 'shuffled_signification' not in st.session_state:
-        st.session_state.shuffled_graphie = random.sample(list(df["Graphie"]), len(df))
-        st.session_state.shuffled_signification = random.sample(list(df["Signification"]), len(df))
-        st.session_state.correct_pairs = df.set_index("Graphie")["Signification"].to_dict()
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        graphie_choice = st.radio("Choisissez un mot chinois :", st.session_state.shuffled_graphie, key="graphie")
-
-    with col2:
-        signification_choice = st.radio("Choisissez une signification :", st.session_state.shuffled_signification, key="signification")
-
-    if st.button("Vérifier la correspondance"):
-        correct = st.session_state.correct_pairs.get(graphie_choice) == signification_choice
-        if correct:
-            st.success("✅ Bonne réponse !")
-        else:
-            st.error(f"❌ Mauvaise réponse. La bonne signification de '{graphie_choice}' est : {st.session_state.correct_pairs[graphie_choice]}")
-
-    if st.button("🔄 Rejouer"):
-        st.session_state.shuffled_graphie = random.sample(list(df["Graphie"]), len(df))
-        st.session_state.shuffled_signification = random.sample(list(df["Signification"]), len(df))
+       
