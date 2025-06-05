@@ -65,4 +65,9 @@ with col1:
         st.session_state.current += 1
         st.session_state.reveal = False
 with col2:
-    if st.button("👁️ Afficher la traduction
+    if st.button("👁️ Afficher la traduction"):
+        st.session_state.reveal = True
+with col3:
+    if st.button("➡️ Suivant"):
+        st.session_state.current += 1
+        st.session_state.reveal = False
