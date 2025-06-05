@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import random
 
 # Vocabulary list
 data = {
@@ -7,73 +8,61 @@ data = {
     "Pinyin": ["bàba", "māma", "yéye", "nǎinai", "gēge", "dìdi", "jiějie", "mèimei", "jiā", "yǒu", "méi", "jǐ gè …… ?", "jǐ kǒu rén?", "Xiōngdì-jiěmèi", "ài", "háizi", "fùmǔ"],
     "Signification": ["papa", "maman", "grand-père paternel", "grand-mère maternelle", "grand frère", "petit frère", "grande soeur", "petite soeur", "famille, maison", "avoir", "ne pas … (négation avec le verbe avoir)", "combien de ? (quantité d’individus, choses) 1 à 9", "combien de personnes dans ta famille? (quantité membres de la famille)", "frères et soeurs", "aimer = sentiment amoureux", "enfant", "parents"]
 }
-
 df = pd.DataFrame(data)
 
-# Custom CSS for flashcard styling
+# Shuffle once per session
+if 'shuffled_indices' not in st.session_state:
+    st.session_state.shuffled_indices = random.sample(range(len(df)), len(df))
+    st.session_state.current = 0
+    st.session_state.reveal = False
+    st.session_state.review_later = []
+
+# Get current word
+idx = st.session_state.shuffled_indices[st.session_state.current]
+word = df.iloc[idx]
+
+# Page layout
+st.set_page_config(page_title="Mandarin Flashcards", layout="centered")
+st.title("📖 Mandarin Flashcards")
+
+# Flashcard display
 st.markdown("""
     <style>
-    .flashcard {
-        border: 2px solid #f0f0f0;
-        border-radius: 10px;
-        padding: 20px;
-        margin: 20px;
+    .card {
+        border: 2px solid #ddd;
+        border-radius: 12px;
+        padding: 30px;
         text-align: center;
-        background-color: #ffffff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin: 30px auto;
+        width: 80%;
     }
-    .flashcard p {
-        font-size: 24px;
+    .card p {
+        font-size: 32px;
         margin: 10px 0;
     }
-    .flashcard p.pinyin {
-        font-size: 18px;
-        color: #888888;
+    .card .pinyin {
+        font-size: 20px;
+        color: #888;
     }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("📚 Apprendre le Mandarin avec des Flashcards")
-
-# Initialize session state
-if 'index' not in st.session_state:
-    st.session_state.index = 0
-if 'show_translation' not in st.session_state:
-    st.session_state.show_translation = False
-
-# Get current word
-current_word = df.iloc[st.session_state.index]
-
-# Display flashcard
-st.markdown(
-    f"""
-    <div class="flashcard">
-        <p>{current_word['Graphie']}</p>
-        <p class="pinyin">{current_word['Pinyin']}</p>
+st.markdown(f"""
+    <div class="card">
+        <p>{word['Graphie']}</p>
+        <p class="pinyin">{word['Pinyin']}</p>
+        {"<p><strong>" + word['Signification'] + "</strong></p>" if st.session_state.reveal else ""}
     </div>
-    """,
-    unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
 
 # Buttons
-col1, col2 = st.columns(2)
-
+col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
-    if st.button("Afficher la traduction"):
-        st.session_state.show_translation = True
-
+    if st.button("🔁 Revoir plus tard"):
+        st.session_state.review_later.append(idx)
+        st.session_state.current += 1
+        st.session_state.reveal = False
 with col2:
-    if st.button("Mot suivant"):
-        st.session_state.index = (st.session_state.index + 1) % len(df)
-        st.session_state.show_translation = False
-
-# Show translation if requested
-if st.session_state.show_translation:
-    st.markdown(
-        f"""
-        <div class="flashcard">
-            <p>{current_word['Signification']}</p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    if st.button("👁️ Afficher la traduction
