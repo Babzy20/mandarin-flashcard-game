@@ -56,8 +56,13 @@ if mode == "Flashcards":
         unsafe_allow_html=True
     )
 
-    st.markdown(f"""
-        <div class="flashcard">
-            <p>{current_word['Graphie']}</p>
-            <p class="pinyin">{current_word['Pinyin']}</p>
-       
+st.markdown(
+    f"""
+    <div class="flashcard">
+        <p>{current_word['Graphie']}</p>
+        <p class="pinyin">{current_word['Pinyin']}</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
