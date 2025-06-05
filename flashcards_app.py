@@ -10,14 +10,17 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# Initialize session state
-if 'shuffled_indices' not in st.session_state:
-    st.session_state.shuffled_indices = random.sample(range(len(df)), len(df))
-    st.session_state.current = 0
-    st.session_state.reveal = False
-    st.session_state.review_later = []
-    st.session_state.next_trigger = False
-    st.session_state.review_trigger = False
+# Safe initialization of session state
+for key, default in {
+    'shuffled_indices': random.sample(range(len(df)), len(df)),
+    'current': 0,
+    'reveal': False,
+    'review_later': [],
+    'next_trigger': False,
+    'review_trigger': False
+}.items():
+    if key not in st.session_state:
+        st.session_state[key] = default
 
 # Handle triggers
 if st.session_state.next_trigger:
