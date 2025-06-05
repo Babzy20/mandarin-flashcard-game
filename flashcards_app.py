@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 
@@ -34,35 +33,48 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("Apprendre le Mandarin avec des Flashcards")
+st.title("📚 Apprendre le Mandarin avec des Flashcards")
 
+# Initialize session state
 if 'index' not in st.session_state:
     st.session_state.index = 0
 if 'show_translation' not in st.session_state:
     st.session_state.show_translation = False
 
+# Get current word
 current_word = df.iloc[st.session_state.index]
 
-st.markdown(f"""
+# Display flashcard
+st.markdown(
+    f"""
     <div class="flashcard">
         <p>{current_word['Graphie']}</p>
         <p class="pinyin">{current_word['Pinyin']}</p>
     </div>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
 
-if st.button("Afficher la traduction"):
-    st.session_state.show_translation = True
+# Form to show translation
+with st.form("show_translation_form"):
+    show_button = st.form_submit_button("Afficher la traduction")
+    if show_button:
+        st.session_state.show_translation = True
 
+# Show translation if requested
 if st.session_state.show_translation:
-    st.markdown(f"""
+    st.markdown(
+        f"""
         <div class="flashcard">
             <p>{current_word['Signification']}</p>
         </div>
-    """, unsafe_allow_html=True)
+        """,
+        unsafe_allow_html=True
+    )
 
-if st.button("Mot suivant"):
-    st.session_state.index += 1
-    st.session_state.show_translation = False
-
-    if st.session_state.index >= len(df):
-        st.session_state.index = 0
+# Form to go to next word
+with st.form("next_word_form"):
+    next_button = st.form_submit_button("Mot suivant")
+    if next_button:
+        st.session_state.index = (st.session_state.index + 1) % len(df)
+        st.session_state.show_translation = False
