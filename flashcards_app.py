@@ -55,11 +55,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Form to show translation
-with st.form("show_translation_form"):
-    show_button = st.form_submit_button("Afficher la traduction")
-    if show_button:
+# Buttons
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Afficher la traduction"):
         st.session_state.show_translation = True
+
+with col2:
+    if st.button("Mot suivant"):
+        st.session_state.index = (st.session_state.index + 1) % len(df)
+        st.session_state.show_translation = False
 
 # Show translation if requested
 if st.session_state.show_translation:
@@ -71,10 +77,3 @@ if st.session_state.show_translation:
         """,
         unsafe_allow_html=True
     )
-
-# Form to go to next word
-with st.form("next_word_form"):
-    next_button = st.form_submit_button("Mot suivant")
-    if next_button:
-        st.session_state.index = (st.session_state.index + 1) % len(df)
-        st.session_state.show_translation = False
