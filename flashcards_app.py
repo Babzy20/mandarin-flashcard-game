@@ -64,10 +64,33 @@ with col1:
         st.session_state.review_later.append(idx)
         st.session_state.current += 1
         st.session_state.reveal = False
+        st.experimental_rerun()
+
 with col2:
     if st.button("👁️ Afficher la traduction"):
         st.session_state.reveal = True
+        st.experimental_rerun()
+
 with col3:
     if st.button("➡️ Suivant"):
         st.session_state.current += 1
         st.session_state.reveal = False
+        st.experimental_rerun()
+
+# Loop back or finish
+if st.session_state.current >= len(st.session_state.shuffled_indices):
+    st.success("🎉 Vous avez terminé tous les mots !")
+    if st.session_state.review_later:
+        st.info("🔁 Recommençons avec les mots à revoir.")
+        st.session_state.shuffled_indices = st.session_state.review_later
+        st.session_state.current = 0
+        st.session_state.review_later = []
+        st.session_state.reveal = False
+        st.experimental_rerun()
+    else:
+        st.balloons()
+        st.stop()
+
+# Progress bar
+progress = (st.session_state.current + 1) / len(st.session_state.shuffled_indices)
+st.progress(progress)
